@@ -16,6 +16,7 @@ namespace CommunityToolkit.WinUI.Behaviors;
 public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
 {
     private KeyEventHandler? _handler;
+
     /// <summary>
     /// Identifies the <see cref="Key"/> dependency property.
     /// </summary>
@@ -122,36 +123,31 @@ public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
 
     /// <summary>
     /// Checks whether all required modifier keys specified in <see cref="Modifiers"/>
-    /// are currently pressed.
+    /// are currently pressed. Retrieves the physical key states once and evaluates
+    /// them against the required modifier flags.
     /// </summary>
-    /// <returns><see langword="true"/> if the modifier state matches; otherwise, <see langword="false"/>.</returns>
-
-    private bool CheckModifiers() =>
-        Match(VirtualKeyModifiers.Control, VirtualKey.Control) &&
-        Match(VirtualKeyModifiers.Shift, VirtualKey.Shift) &&
-        Match(VirtualKeyModifiers.Menu, VirtualKey.Menu);
-
-    /// <summary>
-    /// Determines whether a specific modifier key is required and whether it is currently pressed.
-    /// </summary>
-    /// <param name="mod">The modifier flag to test.</param>
-    /// <param name="key">The physical key corresponding to the modifier.</param>
-    /// <returns><see langword="true"/> if the modifier requirement matches the current key state; otherwise, <see langword="false"/>.</returns>
-    private bool Match(VirtualKeyModifiers mod, VirtualKey key)
+    /// <returns><see langword="true"/> if the current modifier state matches the requirements; otherwise, <see langword="false"/>.</returns>
+    private bool CheckModifiers()
     {
-        bool required = (Modifiers & mod) != 0;
-        bool pressed = IsDown(key);
-        return required == pressed;
+        bool ctrl = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
+        bool shift = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
+        bool alt = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down);
+
+        return Match(VirtualKeyModifiers.Control, ctrl)
+            && Match(VirtualKeyModifiers.Shift, shift)
+            && Match(VirtualKeyModifiers.Menu, alt);
     }
 
     /// <summary>
-    /// Checks whether the specified key is currently in the <see cref="CoreVirtualKeyStates.Down"/> state.
+    /// Compares whether a specific modifier flag is required and whether the
+    /// corresponding key is currently pressed.
     /// </summary>
-    /// <param name="key">The key to test.</param>
-    /// <returns><see langword="true"/> if the key is pressed; otherwise, <see langword="false"/>.</returns>
-    private static bool IsDown(VirtualKey key)
+    /// <param name="mod">The modifier flag to evaluate.</param>
+    /// <param name="isDown">The current physical key state for that modifier.</param>
+    /// <returns><see langword="true"/> if the requirement matches the key state; otherwise, <see langword="false"/>.</returns>
+    private bool Match(VirtualKeyModifiers mod, bool isDown)
     {
-        var state = InputKeyboardSource.GetKeyStateForCurrentThread(key);
-        return state.HasFlag(CoreVirtualKeyStates.Down);
+        bool required = (Modifiers & mod) != 0;
+        return required == isDown;
     }
 }
