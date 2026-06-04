@@ -56,6 +56,34 @@ public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
     }
 
     /// <summary>
+    /// Identifies the <see cref="CheckModifierKeys"/> dependency property.
+    /// </summary>
+    public static readonly DependencyProperty CheckModifierKeysProperty =
+        DependencyProperty.Register(
+            nameof(CheckModifierKeys),
+            typeof(bool),
+            typeof(KeyDownTriggerBehavior),
+            new PropertyMetadata(false));
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the behavior should evaluate
+    /// the current modifier key state when matching the <see cref="Key"/>.
+    ///
+    /// When <see langword="false"/> (default), the behavior ignores the state of
+    /// modifier keys and triggers solely based on the <see cref="Key"/> value,
+    /// preserving the original behavior.
+    ///
+    /// When <see langword="true"/>, the behavior requires the modifier keys
+    /// specified in <see cref="Modifiers"/> to match the current keyboard state
+    /// before triggering.
+    /// </summary>
+    public bool CheckModifierKeys
+    {
+        get => (bool)GetValue(CheckModifierKeysProperty);
+        set => SetValue(CheckModifierKeysProperty, value);
+    }
+
+    /// <summary>
     /// Identifies the <see cref="HandledEventsToo"/> dependency property.
     /// </summary>
     public static readonly DependencyProperty HandledEventsTooProperty =
@@ -112,7 +140,7 @@ public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
             return;
         }
 
-        if (!CheckModifiers())
+        if (CheckModifierKeys && !CheckModifiers())
         {
             return;
         }
