@@ -3,7 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Xaml.Interactivity;
+using Microsoft.UI.Input;
+using Microsoft.Xaml.Interactivity;
 using Windows.System;
+using Windows.UI.Core;
 
 namespace CommunityToolkit.WinUI.Behaviors;
 
