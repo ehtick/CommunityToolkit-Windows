@@ -159,9 +159,24 @@ public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
     /// <returns><see langword="true"/> if the current modifier state matches the requirements; otherwise, <see langword="false"/>.</returns>
     private bool CheckModifiers()
     {
+#if WINUI3
         bool ctrl = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
         bool shift = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
         bool alt = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down);
+#else
+        // In WinUI 2 we cannot use InputKeyboardSource, so we fall back to the CoreWindow API, which is less reliable in certain scenarios
+        // (e.g. when the app is not active or in multi-window scenarios), but it's the best we have.
+
+        var coreWindow = Window.Current?.CoreWindow;
+        if (coreWindow is null)
+        {
+            return false;
+        };
+
+        bool ctrl = coreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
+        bool shift = coreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
+        bool alt = coreWindow.GetKeyState(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down);
+#endif
 
         return Match(VirtualKeyModifiers.Control, ctrl)
             && Match(VirtualKeyModifiers.Shift, shift)
