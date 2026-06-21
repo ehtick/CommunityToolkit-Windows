@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if WINUI3
 using Microsoft.UI.Input;
+#endif
 using Microsoft.Xaml.Interactivity;
 using Windows.System;
 using Windows.UI.Core;
