@@ -60,11 +60,11 @@ public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
     }
 
     /// <summary>
-    /// Identifies the <see cref="CheckModifierKeys"/> dependency property.
+    /// Identifies the <see cref="ModifiersEnabled"/> dependency property.
     /// </summary>
-    public static readonly DependencyProperty CheckModifierKeysProperty =
+    public static readonly DependencyProperty ModifiersEnabledProperty =
         DependencyProperty.Register(
-            nameof(CheckModifierKeys),
+            nameof(ModifiersEnabled),
             typeof(bool),
             typeof(KeyDownTriggerBehavior),
             new PropertyMetadata(false));
@@ -81,10 +81,10 @@ public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
     /// specified in <see cref="Modifiers"/> to match the current keyboard state
     /// before triggering.
     /// </summary>
-    public bool CheckModifierKeys
+    public bool ModifiersEnabled
     {
-        get => (bool)GetValue(CheckModifierKeysProperty);
-        set => SetValue(CheckModifierKeysProperty, value);
+        get => (bool)GetValue(ModifiersEnabledProperty);
+        set => SetValue(ModifiersEnabledProperty, value);
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public class KeyDownTriggerBehavior : Trigger<FrameworkElement>
             return;
         }
 
-        if (CheckModifierKeys && !CheckModifiers())
+        if (ModifiersEnabled && !CheckModifiers())
         {
             return;
         }
